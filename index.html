@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajal Rajan - Software Developer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Left Side - Profile Section -->
+        <div class="profile-section">
+            <div class="profile-content">
+                <div class="profile-header">
+                    <h1 class="name">Ajal Rajan</h1>
+                    <p class="title">Software Developer</p>
+                </div>
+
+                <div class="profile-image-container">
+                    <div class="image-wrapper">
+                        <img src="https://via.placeholder.com/300x400/333/fff?text=Your+Photo" alt="Profile"
+                            id="profile-img">
+                        <div class="image-overlay">
+                            <span class="overlay-text">gateremark</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-card">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="card-title">Tech Stack</h3>
+                        <div class="card-badges">
+                            <span class="badge">Python</span>
+                            <span class="badge">Django</span>
+                            <span class="badge">Angular</span>
+                            <span class="badge">PostgreSQL</span>
+                        </div>
+                        <p class="card-info">Hover to interact</p>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Terminal Section -->
+        <div class="terminal-section">
+            <div class="terminal-body">
+                <div id="output"></div>
+                <div class="input-line">
+                    <div class="prompt-segments">
+                        <span class="segment segment-user">
+                            <i class="fas fa-user segment-icon"></i>
+                            <span class="segment-text">ajal</span>
+                            <span class="segment-arrow">&#xe0b0;</span>
+                        </span>
+                        <span class="segment segment-path">
+                            <i class="fas fa-folder segment-icon"></i>
+                            <span class="segment-text">~/portfolio/website</span>
+                            <span class="segment-arrow">&#xe0b0;</span>
+                        </span>
+                        <span class="segment segment-branch">
+                            <i class="fas fa-code-branch segment-icon"></i>
+                            <span class="segment-text">main</span>
+                        </span>
+                    </div>
+                    <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
