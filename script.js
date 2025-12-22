@@ -275,16 +275,16 @@ ${'═'.repeat(60)}
         chatMode = true;
         chatContext = [];
         return `
-<span class="success">🤖 AI Chat Mode Activated!</span>
+<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;"> Jiraya AI Assistant Activated!</span>
 ${'─'.repeat(60)}
 
-<span class="info">You can now chat with my AI assistant. Ask me anything about:
-• My projects and experience
+<span class="info">Hi! I'm <span class="warning">Jiraya</span>, Ajal's AI assistant. Ask me anything about:
+• Projects and portfolio work
 • Technical skills and expertise
-• Career advice and collaboration
-• Anything else!
+• Work experience and education
+• Contact information
 
-Type <span class="warning">'exit'</span> to return to normal mode.</span>
+Type <span class="warning">'exit'</span> to return to terminal mode.</span>
         `;
     },
 
@@ -463,49 +463,49 @@ function getAIResponse(message) {
 
     // Greeting responses
     if (lowerMsg.match(/^(hi|hello|hey|greetings)/)) {
-        return `<span class="success">🤖 AI Assistant:</span> Hello! I'm ${portfolioData.name}'s AI assistant. How can I help you today? Feel free to ask about projects, skills, or anything else!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Hello! I'm Jiraya, Ajal's AI assistant. How can I help you learn about him today? Feel free to ask about projects, skills, or anything else!`;
     }
 
     // Project-related questions
     if (lowerMsg.includes('project') || lowerMsg.includes('work') || lowerMsg.includes('built')) {
         const project = portfolioData.projects[Math.floor(Math.random() * portfolioData.projects.length)];
-        return `<span class="success">🤖 AI Assistant:</span> Great question! One of the exciting projects is "${project.name}" built with ${project.tech}. ${project.description}\n\nType 'projects' to see all projects, or ask me something else!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Great question! One of the exciting projects is "${project.name}" built with ${project.tech}. ${project.description}\n\nType 'projects' to see all projects, or ask me something else!`;
     }
 
     // Skills-related questions
     if (lowerMsg.includes('skill') || lowerMsg.includes('technology') || lowerMsg.includes('tech stack')) {
         const categories = Object.keys(portfolioData.skills);
         const randomCat = categories[Math.floor(Math.random() * categories.length)];
-        return `<span class="success">🤖 AI Assistant:</span> ${portfolioData.name} has strong expertise in ${randomCat}: ${portfolioData.skills[randomCat].join(', ')}. \n\nType 'skills' to see the complete skill set!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> ${portfolioData.name} has strong expertise in ${randomCat}: ${portfolioData.skills[randomCat].join(', ')}. \n\nType 'skills' to see the complete skill set!`;
     }
 
     // Experience-related questions
     if (lowerMsg.includes('experience') || lowerMsg.includes('worked') || lowerMsg.includes('job')) {
         const job = portfolioData.experience_details[0];
-        return `<span class="success">🤖 AI Assistant:</span> Currently working as ${job.role} at ${job.company} since ${job.period}. Key achievements include ${job.responsibilities[0].toLowerCase()}.\n\nType 'experience' for full work history!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Currently working as ${job.role} at ${job.company} since ${job.period}. Key achievements include ${job.responsibilities[0].toLowerCase()}.\n\nType 'experience' for full work history!`;
     }
 
     // Contact-related questions
     if (lowerMsg.includes('contact') || lowerMsg.includes('email') || lowerMsg.includes('reach') || lowerMsg.includes('hire')) {
-        return `<span class="success">🤖 AI Assistant:</span> You can reach out at ${portfolioData.email} or connect on LinkedIn: ${portfolioData.linkedin}. \n\nType 'contact' for all contact information!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> You can reach out at ${portfolioData.email} or connect on LinkedIn: ${portfolioData.linkedin}. \n\nType 'contact' for all contact information!`;
     }
 
     // AI/ML related questions
     if (lowerMsg.includes('ai') || lowerMsg.includes('machine learning') || lowerMsg.includes('artificial intelligence')) {
-        return `<span class="success">🤖 AI Assistant:</span> ${portfolioData.name} is passionate about AI & ML! Experienced with ${portfolioData.skills['AI/ML'].join(', ')}. Currently working on AI-powered projects and exploring the latest in generative AI!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> ${portfolioData.name} is passionate about AI & ML! Experienced with ${portfolioData.skills['AI/ML'].join(', ')}. Currently working on AI-powered projects and exploring the latest in generative AI!`;
     }
 
     // Location/availability questions
     if (lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('available')) {
-        return `<span class="success">🤖 AI Assistant:</span> Based in ${portfolioData.location}, but open to remote opportunities worldwide. Available for exciting projects and collaborations!`;
+        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Based in ${portfolioData.location}, but open to remote opportunities worldwide. Available for exciting projects and collaborations!`;
     }
 
     // Generic helpful response
     const responses = [
-        `<span class="success">🤖 AI Assistant:</span> That's an interesting question! With ${portfolioData.experience} of experience, I can help answer questions about projects, skills, or career. What would you like to know?`,
-        `<span class="success">🤖 AI Assistant:</span> I'd love to help! Try asking about specific projects, technical skills, or work experience. You can also type 'help' to see all available commands.`,
-        `<span class="success">🤖 AI Assistant:</span> Great question! ${portfolioData.name} specializes in ${portfolioData.title} with expertise in modern web technologies and AI. What specific area interests you?`,
-        `<span class="success">🤖 AI Assistant:</span> I can provide information about projects, skills, experience, and more. Try asking something like "What projects have you built?" or "What are your skills?"`
+        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> That's an interesting question! With ${portfolioData.experience} of experience, I can help answer questions about projects, skills, or career. What would you like to know?`,
+        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> I'd love to help! Try asking about specific projects, technical skills, or work experience. You can also type 'help' to see all available commands.`,
+        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Great question! ${portfolioData.name} specializes in ${portfolioData.title} with expertise in modern web technologies and AI. What specific area interests you?`,
+        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> I can provide information about projects, skills, experience, and more. Try asking something like "What projects have you built?" or "What are your skills?"`
     ];
 
     return responses[Math.floor(Math.random() * responses.length)];
