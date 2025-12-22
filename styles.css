@@ -334,6 +334,9 @@ body {
     margin-top: 10px;
     padding: 12px 0;
     animation: slideIn 0.5s ease-out;
+    border-left: 3px solid #0f0;
+    padding-left: 8px;
+    background: rgba(0, 255, 0, 0.02);
 }
 
 @keyframes slideIn {
@@ -435,6 +438,20 @@ body {
     color: transparent;
 }
 
+.input-prompt {
+    color: #0f0;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 8px 0 5px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
 #terminal-input {
     background: transparent;
     border: none;
@@ -445,6 +462,25 @@ body {
     flex-grow: 1;
     caret-color: #0f0;
     font-weight: 400;
+    padding: 4px;
+}
+
+#terminal-input::placeholder {
+    color: rgba(0, 255, 0, 0.4);
+    font-style: italic;
+}
+
+#terminal-input:focus::placeholder {
+    opacity: 0;
+}
+
+.cursor-indicator {
+    color: #0f0;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    margin-left: 4px;
+    animation: cursor-blink 1s step-end infinite;
+    pointer-events: none;
 }
 
 #terminal-input::selection {

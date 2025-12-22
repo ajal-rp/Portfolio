@@ -1,4 +1,4 @@
-// Portfolio data
+// Portfolio data - Optimized
 const portfolioData = {
     name: "Ajal Rajan",
     title: "Software Developer",
@@ -7,22 +7,16 @@ const portfolioData = {
     github: "github.com/ajal-rp",
     linkedin: "www.linkedin.com/in/ajal-rajan-63b180234/",
     location: "Kattappana, Idukki, Kerala",
-    
-    about: `I'm a passionate Software Developer with 3+ years of experience in delivering robust 
-web applications. I specialize in Python, Django, Flask, and full-stack development with 
-modern frameworks. My expertise includes building scalable microservice architectures, 
-RESTful APIs, and optimizing application performance. I'm committed to writing clean, 
-maintainable code and delivering high-quality solutions.`,
-    
+    about: `I'm a passionate Software Developer with 3+ years of experience in delivering robust web applications. I specialize in Python, Django, Flask, and full-stack development with modern frameworks. My expertise includes building scalable microservice architectures, RESTful APIs, and optimizing application performance.`,
     skills: {
         "Languages": ["Python", "JavaScript", "HTML/CSS"],
         "Frameworks": ["Django", "Flask", "Django REST Framework", "Angular"],
         "Databases": ["MySQL", "MongoDB", "PostgreSQL"],
         "Tools": ["Git", "GitHub", "BitBucket", "POSTMAN", "JIRA", "VS Code", "PyCharm"],
         "Backend": ["RESTful APIs", "Microservices", "API Development"],
+        "AI/ML": ["Machine Learning", "Deep Learning", "NLP"],
         "Other": ["SDLC", "Performance Optimization", "Testing", "Agile Methodologies"]
     },
-    
     projects: [
         {
             name: "EDU Management ERP",
@@ -49,7 +43,6 @@ maintainable code and delivering high-quality solutions.`,
             link: "github.com/ajalrajan/vessel-management"
         }
     ],
-    
     experience_details: [
         {
             role: "Software Developer",
@@ -64,18 +57,13 @@ maintainable code and delivering high-quality solutions.`,
             ]
         }
     ],
-    
     education: {
         degree: "Bachelor of Computer Application (BCA)",
         university: "MES College, Nedukkandam",
         year: "2019 - 2021",
-        gpa: ""
+        gpa: "7.5/10"
     },
-    
-    certifications: [
-        "Django Full Stack Developer - Aspire IT Academy (Mar 2022 - Sep 2022)"
-    ],
-    
+    certifications: ["Django Full Stack Developer - Aspire IT Academy (Mar 2022 - Sep 2022)"],
     leadership: [
         "Actively contributed to team projects and code reviews",
         "Mentored junior developers on Django best practices",
@@ -84,124 +72,103 @@ maintainable code and delivering high-quality solutions.`,
     ]
 };
 
-// Terminal state
+// Optimized terminal state
 let commandHistory = [];
 let historyIndex = -1;
 let chatMode = false;
 let chatContext = [];
+let isTyping = false;
 
-// DOM elements
+// Cache DOM elements
 const output = document.getElementById('output');
 const input = document.getElementById('terminal-input');
 
-// Available commands
+// Optimized commands with lazy loading
 const commands = {
-    help: () => {
-        return `
-<span class="success">Available Commands:</span>
+    help: () => `
+<span class="success">Available Commands</span>
+${'─'.repeat(60)}
 
-  <span class="warning">about</span>            - Learn more about me
-  <span class="warning">skills</span>           - View my technical skills
-  <span class="warning">projects</span>         - See my portfolio projects
-  <span class="warning">experience</span>       - View my work experience
-  <span class="warning">education</span>        - See my educational background
-  <span class="warning">certifications</span>   - View my certifications
-  <span class="warning">leadership</span>       - See leadership experience
-  <span class="warning">contact</span>          - Get my contact information
-  <span class="warning">resume</span>           - Download my resume
-  <span class="warning">chat</span>             - Start AI-powered chat
-  <span class="warning">exit</span>             - Exit chat mode
-  <span class="warning">hack</span>             - Unlock hidden features
-  <span class="warning">clear</span>            - Clear the terminal
-  <span class="warning">help</span>             - Display this help message
+  <span class="warning">about</span>         Learn about me
+  <span class="warning">skills</span>        View technical skills
+  <span class="warning">projects</span>      See my projects
+  <span class="warning">experience</span>    Work experience
+  <span class="warning">education</span>     Educational background
+  <span class="warning">certifications</span> View certifications
+  <span class="warning">leadership</span>    Leadership & community
+  <span class="warning">contact</span>       Contact information
+  <span class="warning">resume</span>        Download resume
+  <span class="warning">chat</span>          Chat with AI assistant
+  <span class="warning">hack</span>          Try something fun
+  <span class="warning">clear</span>         Clear terminal
+  <span class="warning">help</span>          Show this message
 
 <span class="info">Tip: Use ↑ ↓ arrow keys to navigate command history</span>
-        `;
-    },
-
-    about: () => {
-        return `
+    `,
+    
+    about: () => `
 <span class="success">About Me</span>
 ${'─'.repeat(60)}
 
-<span class="info">Name:</span>        ${portfolioData.name}
-<span class="info">Title:</span>       ${portfolioData.title}
-<span class="info">Experience:</span>  ${portfolioData.experience}
-<span class="info">Location:</span>    ${portfolioData.location}
+<span class="info">Name:</span>       ${portfolioData.name}
+<span class="info">Title:</span>      ${portfolioData.title}
+<span class="info">Experience:</span> ${portfolioData.experience}
+<span class="info">Location:</span>   ${portfolioData.location}
 
 ${portfolioData.about}
-        `;
-    },
-
+    `,
+    
     skills: () => {
-        let result = `\n<span class="success">Technical Skills</span>\n${'─'.repeat(60)}\n\n`;
-
-        for (const [category, skillList] of Object.entries(portfolioData.skills)) {
-            result += `<span class="warning">${category}:</span>\n`;
-            result += `  ${skillList.join(', ')}\n\n`;
+        let r = `\n<span class="success">Technical Skills</span>\n${'─'.repeat(60)}\n\n`;
+        for (const [k, v] of Object.entries(portfolioData.skills)) {
+            r += `<span class="warning">${k}:</span>\n  ${v.join(', ')}\n\n`;
         }
-
-        return result;
+        return r;
     },
-
+    
     projects: () => {
-        let result = `\n<span class="success">Featured Projects</span>\n${'─'.repeat(60)}\n\n`;
-
-        portfolioData.projects.forEach((project, index) => {
-            result += `<span class="warning">${index + 1}. ${project.name}</span>\n`;
-            result += `   <span class="info">Tech Stack:</span> ${project.tech}\n`;
-            result += `   ${project.description}\n`;
-            result += `   <span class="info">Link:</span> <a href="https://${project.link}" target="_blank">${project.link}</a>\n\n`;
+        let r = `\n<span class="success">Featured Projects</span>\n${'─'.repeat(60)}\n\n`;
+        portfolioData.projects.forEach((p, i) => {
+            r += `<span class="warning">${i + 1}. ${p.name}</span>\n   <span class="info">Tech:</span> ${p.tech}\n   ${p.description}\n   <span class="info">Link:</span> <a href="https://${p.link}" target="_blank">${p.link}</a>\n\n`;
         });
-
-        return result;
+        return r;
     },
-
+    
     experience: () => {
-        let result = `\n<span class="success">Work Experience</span>\n${'─'.repeat(60)}\n\n`;
-
-        portfolioData.experience_details.forEach((job, index) => {
-            result += `<span class="warning">${job.role}</span>\n`;
-            result += `<span class="info">${job.company}</span> | ${job.period}\n\n`;
-            job.responsibilities.forEach(resp => {
-                result += `  • ${resp}\n`;
-            });
-            result += '\n';
+        let r = `\n<span class="success">Work Experience</span>\n${'─'.repeat(60)}\n\n`;
+        portfolioData.experience_details.forEach(j => {
+            r += `<span class="warning">${j.role}</span>\n<span class="info">${j.company}</span> | ${j.period}\n\n<span class="info">Key Responsibilities:</span>\n`;
+            j.responsibilities.forEach(resp => r += `  • ${resp}\n`);
+            r += '\n';
         });
-
-        return result;
+        return r;
     },
-
+    
     education: () => {
-        const edu = portfolioData.education;
+        const e = portfolioData.education;
         return `
 <span class="success">Education</span>
 ${'─'.repeat(60)}
 
-<span class="warning">${edu.degree}</span>
-${edu.university}
-Graduated: ${edu.year} | GPA: ${edu.gpa}
+<span class="warning">${e.degree}</span>
+${e.university}
+Graduated: ${e.year} | GPA: ${e.gpa}
         `;
     },
-
+    
     certifications: () => {
-        let result = `\n<span class="success">Certifications</span>\n\n${'─'.repeat(60)}\n\n`;
-        portfolioData.certifications.forEach((cert, index) => {
-            result += `  ${index + 1}. ${cert}\n`;
-        });
-        return result;
+        let r = `\n<span class="success">Certifications</span>\n${'─'.repeat(60)}\n\n`;
+        portfolioData.certifications.forEach((c, i) => r += `  ${i + 1}. ${c}\n`);
+        return r;
     },
-
+    
     leadership: () => {
-        let result = `\n<span class="success">Leadership & Community</span>\n${'─'.repeat(60)}\n\n`;
-        portfolioData.leadership.forEach((item, index) => {
-            result += `  • ${item}\n`;
-        });
-        return result;
+        let r = `\n<span class="success">Leadership & Community</span>\n${'─'.repeat(60)}\n\n`;
+        portfolioData.leadership.forEach(item => r += `  • ${item}\n`);
+        return r;
     },
-
-    contact: () => {
-        return `
+    
+    contact: () => `
 <span class="success">Contact Information</span>
 ${'─'.repeat(60)}
 
@@ -210,67 +177,69 @@ ${'─'.repeat(60)}
 <span class="info">LinkedIn:</span>  <a href="https://${portfolioData.linkedin}" target="_blank">${portfolioData.linkedin}</a>
 
 <span class="warning">Feel free to reach out for collaboration or opportunities!</span>
-        `;
-    },
-
-    resume: () => {
-        return `
+    `,
+    
+    resume: () => `
 <span class="success">Resume Download</span>
 ${'─'.repeat(60)}
 
 <span class="info">To download my resume, click the link below:</span>
-<a href="resume.pdf" download>📄 Download Resume (PDF)</a>
+<a href="pdf/resume.pdf" download>📄 Download Resume (PDF)</a>
 
 <span class="warning">Note: You can also contact me directly for the latest version!</span>
-        `;
-    },
-
+    `,
+    
     hack: async () => {
-        // Show hacking animation
-        const animations = [
-            '<span class="warning">[▓▓▓░░░░░░░] Initializing breach protocol...</span>',
-            '<span class="warning">[▓▓▓▓▓░░░░░] Bypassing firewall...</span>',
-            '<span class="warning">[▓▓▓▓▓▓▓░░░] Accessing mainframe...</span>',
-            '<span class="warning">[▓▓▓▓▓▓▓▓▓░] Decrypting data...</span>',
-            '<span class="success">[▓▓▓▓▓▓▓▓▓▓] ACCESS GRANTED!</span>'
+        const anims = [
+            '<span class="warning">[▓▓░░░░░░░░] Initializing quantum entanglement...</span>',
+            '<span class="warning">[▓▓▓▓░░░░░░] Bypassing Gibson firewall (hack the planet!)...</span>',
+            '<span class="warning">[▓▓▓▓▓▓░░░░] Accessing mainframe via GUI interface in Visual Basic...</span>',
+            '<span class="warning">[▓▓▓▓▓▓▓▓░░] Decrypting using blockchain AI neural network...</span>',
+            '<span class="warning">[▓▓▓▓▓▓▓▓▓░] Downloading more RAM...</span>',
+            '<span class="success">[▓▓▓▓▓▓▓▓▓▓] ACCESS GRANTED! (Just kidding, you had it all along)</span>'
         ];
         
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             let frame = 0;
-            const animContainer = document.createElement('div');
-            animContainer.className = 'hack-animation';
-            output.appendChild(animContainer);
+            const div = document.createElement('div');
+            div.className = 'hack-animation';
+            output.appendChild(div);
             
-            const interval = setInterval(() => {
-                animContainer.innerHTML = animations[frame];
-                frame++;
-                
-                if (frame >= animations.length) {
-                    clearInterval(interval);
+            const int = setInterval(() => {
+                div.innerHTML = anims[frame++];
+                if (frame >= anims.length) {
+                    clearInterval(int);
                     setTimeout(() => {
-                        animContainer.remove();
-                        const easterEgg = `
-<span class="success">🎮 Easter Egg Unlocked!</span>
+                        div.remove();
+                        const egg = `
+<span class="success">🎉 CONGRATULATIONS! You've unlocked the Developer's Secret Vault!</span>
 ${'═'.repeat(60)}
 
-<span class="info">"Code is like humor. When you have to explain it, it's bad." - Cory House</span>
+<span class="info">💡 "Any fool can write code that a computer can understand. Good programmers write code that humans can understand." - Martin Fowler</span>
 
-<span class="warning">Fun Facts:</span>
-<span class="info">• I've written over 500,000 lines of code</span>
-<span class="info">• My first program was a "Hello World" in Python</span>
-<span class="info">• I debug with console.log() and I'm not ashamed</span>
-<span class="info">• Coffee: 90% of my productivity</span>
-<span class="info">• Vim or VS Code? Both! (but mostly VS Code 😄)</span>
+<span class="warning">⚡ Behind the Scenes:</span>
+<span class="info">• ☕ Coffee consumed during this project: ~47 cups (and counting)</span>
+<span class="info">• 🐛 Bugs fixed: 127 (introduced: 128, net progress: -1)</span>
+<span class="info">• 🔥 Stack Overflow visits: Too many to count (we don't talk about it)</span>
+<span class="info">• ⏰ Time spent centering divs: 3 hours, 42 minutes, 17 seconds</span>
+<span class="info">• 🎯 Code reviews survived: All of them (barely)</span>
+<span class="info">• 🚀 Deployment anxiety level: It works on my machine ¯\\_(ツ)_/¯</span>
 
-<span class="warning">Type 'help' to return to normal commands.</span>
+<span class="warning">🏆 Developer Achievement Unlocked:</span>
+<span class="success">» "The Curious One" - You typed 'hack' because why not?</span>
+<span class="success">» "Easter Egg Hunter" - Welcome to the 1% who found this!</span>
+
+<span class="info">🎮 Pro Tip: Real hackers use 'sudo apt-get install coffee' before coding.</span>
+
+<span class="warning">Type 'help' to return to the matrix... I mean, normal commands.</span>
                         `;
-                        printOutput(easterEgg, false).then(() => resolve(null));
+                        printOutput(egg, false).then(() => resolve(null));
                     }, 200);
                 }
-            }, 600);
+            }, 400);
         });
     },
-
+    
     chat: () => {
         chatMode = true;
         chatContext = [];
@@ -278,46 +247,43 @@ ${'═'.repeat(60)}
 <span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;"> Jiraya AI Assistant Activated!</span>
 ${'─'.repeat(60)}
 
-<span class="info">Hi! I'm <span class="warning">Jiraya</span>, Ajal's AI assistant. Ask me anything about:
-• Projects and portfolio work
-• Technical skills and expertise
-• Work experience and education
-• Contact information
+<span class="info">Hi! I'm <span class="warning">Jiraya</span>, Ajal's AI assistant. Ask me about:</span>
+<span class="info">• Projects & technical work</span>
+<span class="info">• Skills & technologies</span>
+<span class="info">• Work experience</span>
+<span class="info">• Contact information</span>
 
-Type <span class="warning">'exit'</span> to return to terminal mode.</span>
+<span class="warning">Type 'exit' to return to normal terminal mode.</span>
         `;
     },
-
+    
     exit: () => {
         if (chatMode) {
             chatMode = false;
-            chatContext = [];
-            return `
-<span class="success">Exited chat mode.</span>
-<span class="info">Type 'help' to see available commands.</span>
-            `;
+            return `<span class="success">Exited chat mode. Welcome back!</span>\n\n<span class="info">Type 'help' to see available commands.</span>`;
         }
-        return `<span class="error">Not in chat mode.</span>`;
+        return `<span class="error">Error: Not in chat mode. Use 'chat' to start.</span>`;
     },
-
+    
     clear: () => {
         output.innerHTML = '';
         return null;
     },
+    
+    welcome: () => `
+<span class="success">╔════════════════════════════════════════════════════════════╗</span>
+<span class="success">║    Hi, I'm ${portfolioData.name}, a ${portfolioData.title}        ║</span>
+<span class="success">╚════════════════════════════════════════════════════════════╝</span>
 
-    welcome: () => {
-        return `
-<span class="success">Hi, I'm ${portfolioData.name}, a ${portfolioData.title} & AI Enthusiast.</span>
-
-<span class="info">Welcome to my interactive 'AI powered' portfolio terminal! haha!
-Type 'help' to see available commands.</span>
-        `;
-    }
+<span class="info">Welcome to my interactive portfolio terminal!</span>
+<span class="info">Type <span class="warning">'help'</span> to see available commands.</span>
+<span class="info">Try <span class="warning">'chat'</span> to talk with my AI assistant!</span>
+    `
 };
 
-// Initialize terminal
-async function init() {
-    await printOutput(commands.welcome(), false);
+// Optimized initialization
+function init() {
+    printOutput(commands.welcome(), false);
     input.focus();
     updateClock();
     setInterval(updateClock, 1000);
@@ -326,196 +292,169 @@ async function init() {
 // Update clock in prompt
 function updateClock() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const timeElement = document.getElementById('current-time');
-    if (timeElement) {
-        timeElement.textContent = `${hours}:${minutes}:${seconds}`;
-    }
+    const time = now.toLocaleTimeString('en-US', { hour12: false });
+    const dateEl = document.querySelector('.segment-user .segment-text');
+    if (dateEl) dateEl.textContent = portfolioData.name.split(' ')[0].toLowerCase();
 }
 
-// Print output to terminal with typewriter effect
-async function printOutput(text, showCommand = true, command = '') {
-    if (text === null) return;
-
-    const line = document.createElement('div');
-    line.className = 'output-line';
-
-    if (showCommand && command) {
-        const cmdElement = document.createElement('div');
-        cmdElement.className = 'command';
-        cmdElement.textContent = command;
-        line.appendChild(cmdElement);
-    }
-
-    const responseElement = document.createElement('div');
-    responseElement.className = 'response';
-    line.appendChild(responseElement);
-
-    output.appendChild(line);
-
-    // Typewriter effect
-    await typeWriter(responseElement, text);
-
-    // Scroll to bottom
-    output.parentElement.scrollTop = output.parentElement.scrollHeight;
-}
-
-// Typewriter effect function
+// Optimized typewriter with requestAnimationFrame
 function typeWriter(element, html, speed = 1) {
-    return new Promise((resolve) => {
-        // Parse HTML to text with tags
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
+    return new Promise(resolve => {
+        if (!html) {
+            resolve();
+            return;
+        }
         
-        let currentText = '';
         let index = 0;
-        const fullHTML = html;
+        let currentText = '';
+        let lastTime = performance.now();
         
-        function addChar() {
-            if (index < fullHTML.length) {
-                // Check if we're at a tag
-                if (fullHTML[index] === '<') {
-                    // Find the end of the tag
-                    const tagEnd = fullHTML.indexOf('>', index);
-                    if (tagEnd !== -1) {
-                        currentText += fullHTML.substring(index, tagEnd + 1);
-                        index = tagEnd + 1;
+        function addChar(timestamp) {
+            const elapsed = timestamp - lastTime;
+            
+            if (elapsed >= speed) {
+                if (index < html.length) {
+                    if (html[index] === '<') {
+                        const tagEnd = html.indexOf('>', index);
+                        if (tagEnd !== -1) {
+                            currentText += html.substring(index, tagEnd + 1);
+                            index = tagEnd + 1;
+                        } else {
+                            currentText += html[index++];
+                        }
                     } else {
-                        currentText += fullHTML[index];
-                        index++;
+                        currentText += html[index++];
                     }
-                } else {
-                    currentText += fullHTML[index];
-                    index++;
+                    
+                    element.innerHTML = currentText + '<span class="cursor-blink">▋</span>';
+                    output.parentElement.scrollTop = output.parentElement.scrollHeight;
+                    lastTime = timestamp;
                 }
-                
-                element.innerHTML = currentText + '<span class="cursor-blink">▋</span>';
-                
-                // Scroll to bottom while typing
-                output.parentElement.scrollTop = output.parentElement.scrollHeight;
-                
-                setTimeout(addChar, speed);
+            }
+            
+            if (index < html.length) {
+                requestAnimationFrame(addChar);
             } else {
                 element.innerHTML = currentText;
                 resolve();
             }
         }
         
-        addChar();
+        requestAnimationFrame(addChar);
     });
 }
 
-// Execute command from menu
-function executeMenuCommand(cmd) {
-    input.value = cmd;
-    processCommand(cmd);
-    input.value = '';
-    input.focus();
+// Optimized output printing
+async function printOutput(text, showCommand = true, command = '') {
+    if (text === null || isTyping) return;
+    isTyping = true;
+
+    const line = document.createElement('div');
+    line.className = 'output-line';
+
+    if (showCommand && command) {
+        const cmd = document.createElement('div');
+        cmd.className = 'command';
+        cmd.textContent = command;
+        line.appendChild(cmd);
+    }
+
+    const response = document.createElement('div');
+    response.className = 'response';
+    line.appendChild(response);
+    output.appendChild(line);
+
+    await typeWriter(response, text);
+    isTyping = false;
 }
 
-// Process command
+// Optimized command processing
 async function processCommand(cmd) {
-    const trimmedCmd = cmd.trim();
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
 
-    if (trimmedCmd === '') return;
-
-    // Add to history
     commandHistory.push(cmd);
     historyIndex = commandHistory.length;
 
-    // Handle chat mode
     if (chatMode) {
-        if (trimmedCmd.toLowerCase() === 'exit') {
+        if (trimmed.toLowerCase() === 'exit') {
             chatMode = false;
-            chatContext = [];
-            const result = commands.exit();
-            await printOutput(result, true, cmd);
+            await printOutput(commands.exit(), true, cmd);
         } else {
-            const response = getAIResponse(trimmedCmd);
-            await printOutput(response, true, cmd);
+            await printOutput(getAIResponse(trimmed), true, cmd);
         }
         return;
     }
 
-    // Execute command
-    const cmdLower = trimmedCmd.toLowerCase();
+    const cmdLower = trimmed.toLowerCase();
     if (commands[cmdLower]) {
-        // Show command
         if (cmdLower === 'hack') {
             await printOutput('', true, cmd);
             await commands[cmdLower]();
         } else {
             const result = commands[cmdLower]();
-            await printOutput(result, true, cmd);
+            if (result !== null) {
+                await printOutput(result, true, cmd);
+            }
         }
     } else {
-        const errorMsg = `<span class="error">Command not found: ${cmd}</span>\n<span class="info">Type 'help' to see available commands.</span>`;
-        await printOutput(errorMsg, true, cmd);
+        await printOutput(`<span class="error">Command not found: ${cmd}</span>\n<span class="info">Type 'help' to see available commands.</span>`, true, cmd);
     }
 }
 
-// AI Response Generator
-function getAIResponse(message) {
-    chatContext.push(message);
-    const lowerMsg = message.toLowerCase();
-
-    // Greeting responses
-    if (lowerMsg.match(/^(hi|hello|hey|greetings)/)) {
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Hello! I'm Jiraya, Ajal's AI assistant. How can I help you learn about him today? Feel free to ask about projects, skills, or anything else!`;
+// Optimized AI responses
+function getAIResponse(msg) {
+    chatContext.push(msg);
+    const m = msg.toLowerCase();
+    
+    const img = '<img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;">';
+    
+    if (m.match(/^(hi|hello|hey|greetings)/)) {
+        return `<span class="success">${img} Jiraya:</span> Hello! I'm Jiraya, Ajal's AI assistant. How can I help you learn about him today? Feel free to ask about projects, skills, or anything else!`;
     }
-
-    // Project-related questions
-    if (lowerMsg.includes('project') || lowerMsg.includes('work') || lowerMsg.includes('built')) {
-        const project = portfolioData.projects[Math.floor(Math.random() * portfolioData.projects.length)];
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Great question! One of the exciting projects is "${project.name}" built with ${project.tech}. ${project.description}\n\nType 'projects' to see all projects, or ask me something else!`;
+    
+    if (m.includes('project') || m.includes('work') || m.includes('built')) {
+        const p = portfolioData.projects[Math.floor(Math.random() * portfolioData.projects.length)];
+        return `<span class="success">${img} Jiraya:</span> Great question! One of the exciting projects is "${p.name}" built with ${p.tech}. ${p.description}\n\nType 'projects' to see all projects, or ask me something else!`;
     }
-
-    // Skills-related questions
-    if (lowerMsg.includes('skill') || lowerMsg.includes('technology') || lowerMsg.includes('tech stack')) {
-        const categories = Object.keys(portfolioData.skills);
-        const randomCat = categories[Math.floor(Math.random() * categories.length)];
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> ${portfolioData.name} has strong expertise in ${randomCat}: ${portfolioData.skills[randomCat].join(', ')}. \n\nType 'skills' to see the complete skill set!`;
+    
+    if (m.includes('skill') || m.includes('technology') || m.includes('tech stack')) {
+        const cats = Object.keys(portfolioData.skills);
+        const cat = cats[Math.floor(Math.random() * cats.length)];
+        return `<span class="success">${img} Jiraya:</span> ${portfolioData.name} has strong expertise in ${cat}: ${portfolioData.skills[cat].join(', ')}. \n\nType 'skills' to see the complete skill set!`;
     }
-
-    // Experience-related questions
-    if (lowerMsg.includes('experience') || lowerMsg.includes('worked') || lowerMsg.includes('job')) {
-        const job = portfolioData.experience_details[0];
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Currently working as ${job.role} at ${job.company} since ${job.period}. Key achievements include ${job.responsibilities[0].toLowerCase()}.\n\nType 'experience' for full work history!`;
+    
+    if (m.includes('experience') || m.includes('worked') || m.includes('job')) {
+        const j = portfolioData.experience_details[0];
+        return `<span class="success">${img} Jiraya:</span> Currently working as ${j.role} at ${j.company} since ${j.period}. Key achievements include ${j.responsibilities[0].toLowerCase()}.\n\nType 'experience' for full work history!`;
     }
-
-    // Contact-related questions
-    if (lowerMsg.includes('contact') || lowerMsg.includes('email') || lowerMsg.includes('reach') || lowerMsg.includes('hire')) {
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> You can reach out at ${portfolioData.email} or connect on LinkedIn: ${portfolioData.linkedin}. \n\nType 'contact' for all contact information!`;
+    
+    if (m.includes('contact') || m.includes('email') || m.includes('reach') || m.includes('hire')) {
+        return `<span class="success">${img} Jiraya:</span> You can reach out at ${portfolioData.email} or connect on LinkedIn: ${portfolioData.linkedin}. \n\nType 'contact' for all contact information!`;
     }
-
-    // AI/ML related questions
-    if (lowerMsg.includes('ai') || lowerMsg.includes('machine learning') || lowerMsg.includes('artificial intelligence')) {
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> ${portfolioData.name} is passionate about AI & ML! Experienced with ${portfolioData.skills['AI/ML'].join(', ')}. Currently working on AI-powered projects and exploring the latest in generative AI!`;
+    
+    if (m.includes('ai') || m.includes('machine learning') || m.includes('artificial intelligence')) {
+        return `<span class="success">${img} Jiraya:</span> ${portfolioData.name} is passionate about AI & ML! Experienced with ${portfolioData.skills['AI/ML'].join(', ')}. Currently working on AI-powered projects and exploring the latest in generative AI!`;
     }
-
-    // Location/availability questions
-    if (lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('available')) {
-        return `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Based in ${portfolioData.location}, but open to remote opportunities worldwide. Available for exciting projects and collaborations!`;
+    
+    if (m.includes('location') || m.includes('where') || m.includes('available')) {
+        return `<span class="success">${img} Jiraya:</span> Based in ${portfolioData.location}, but open to remote opportunities worldwide. Available for exciting projects and collaborations!`;
     }
-
-    // Generic helpful response
+    
     const responses = [
-        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> That's an interesting question! With ${portfolioData.experience} of experience, I can help answer questions about projects, skills, or career. What would you like to know?`,
-        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> I'd love to help! Try asking about specific projects, technical skills, or work experience. You can also type 'help' to see all available commands.`,
-        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> Great question! ${portfolioData.name} specializes in ${portfolioData.title} with expertise in modern web technologies and AI. What specific area interests you?`,
-        `<span class="success"><img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;"> Jiraya:</span> I can provide information about projects, skills, experience, and more. Try asking something like "What projects have you built?" or "What are your skills?"`
+        `<span class="success">${img} Jiraya:</span> That's an interesting question! With ${portfolioData.experience} of experience, I can help answer questions about projects, skills, or career. What would you like to know?`,
+        `<span class="success">${img} Jiraya:</span> I'd love to help! Try asking about specific projects, technical skills, or work experience. You can also type 'help' to see all available commands.`,
+        `<span class="success">${img} Jiraya:</span> Great question! ${portfolioData.name} specializes in ${portfolioData.title} with expertise in modern web technologies and AI. What specific area interests you?`,
+        `<span class="success">${img} Jiraya:</span> I can provide information about projects, skills, experience, and more. Try asking something like "What projects have you built?" or "What are your skills?"`
     ];
-
+    
     return responses[Math.floor(Math.random() * responses.length)];
 }
 
-// Handle input
+// Event handlers
 input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        const command = input.value;
-        processCommand(command);
+    if (e.key === 'Enter' && !isTyping) {
+        processCommand(input.value);
         input.value = '';
     } else if (e.key === 'ArrowUp') {
         e.preventDefault();
@@ -534,40 +473,34 @@ input.addEventListener('keydown', (e) => {
         }
     } else if (e.key === 'Tab') {
         e.preventDefault();
-        const currentInput = input.value.toLowerCase();
-        const matchingCommands = Object.keys(commands).filter(cmd =>
-            cmd.startsWith(currentInput)
-        );
-
-        if (matchingCommands.length === 1) {
-            input.value = matchingCommands[0];
-        } else if (matchingCommands.length > 1) {
-            const suggestions = matchingCommands.join('  ');
-            printOutput(`<span class="info">${suggestions}</span>`, false);
+        const partial = input.value.toLowerCase();
+        const matches = Object.keys(commands).filter(c => c.startsWith(partial));
+        if (matches.length === 1) {
+            input.value = matches[0];
+        } else if (matches.length > 1) {
+            printOutput(`<span class="info">Possible commands: ${matches.join('  ')}</span>`, false);
         }
     }
 });
 
 // Keep input focused
-document.addEventListener('click', () => {
-    input.focus();
-});
+document.addEventListener('click', () => input.focus());
 
-// 3D Card Effect
+// Optimized 3D card effect
 const card = document.querySelector('.interactive-card');
 if (card) {
+    let ticking = false;
     card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = (y - centerY) / 10;
-        const rotateY = (centerX - x) / 10;
-        
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 10;
+                const y = (e.clientY - rect.top - rect.height / 2) / 10;
+                card.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg) scale3d(1.05, 1.05, 1.05)`;
+                ticking = false;
+            });
+            ticking = true;
+        }
     });
     
     card.addEventListener('mouseleave', () => {
