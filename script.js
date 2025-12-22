@@ -72,6 +72,52 @@ const portfolioData = {
     ]
 };
 
+// Security module
+const Security = {
+    sanitizeHTML: (html) => {
+        if (typeof DOMPurify !== 'undefined') {
+            return DOMPurify.sanitize(html, {
+                ALLOWED_TAGS: ['span', 'a', 'br', 'img'],
+                ALLOWED_ATTR: ['class', 'href', 'target', 'src', 'alt', 'style'],
+                ALLOW_DATA_ATTR: false
+            });
+        }
+        return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    },
+    
+    sanitizeInput: (input) => {
+        return String(input)
+            .trim()
+            .substring(0, 500)
+            .replace(/[<>]/g, '');
+    },
+    
+    validateURL: (url) => {
+        try {
+            const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+            const parsed = new URL(fullUrl);
+            return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '#';
+        } catch {
+            return '#';
+        }
+    },
+    
+    rateLimit: (() => {
+        let count = 0;
+        let lastTime = Date.now();
+        return () => {
+            const now = Date.now();
+            if (now - lastTime < 1000) {
+                count++;
+                return count <= 10;
+            }
+            count = 0;
+            lastTime = now;
+            return true;
+        };
+    })()
+};
+
 // Optimized terminal state
 let commandHistory = [];
 let historyIndex = -1;
@@ -129,7 +175,8 @@ ${portfolioData.about}
     projects: () => {
         let r = `\n<span class="success">Featured Projects</span>\n${'─'.repeat(60)}\n\n`;
         portfolioData.projects.forEach((p, i) => {
-            r += `<span class="warning">${i + 1}. ${p.name}</span>\n   <span class="info">Tech:</span> ${p.tech}\n   ${p.description}\n   <span class="info">Link:</span> <a href="https://${p.link}" target="_blank">${p.link}</a>\n\n`;
+            const safeLink = Security.validateURL(p.link);
+            r += `<span class="warning">${i + 1}. ${p.name}</span>\n   <span class="info">Tech:</span> ${p.tech}\n   ${p.description}\n   <span class="info">Link:</span> <a href="${safeLink}" target="_blank" rel="noopener noreferrer">${p.link}</a>\n\n`;
         });
         return r;
     },
@@ -344,7 +391,7 @@ function typeWriter(element, html, speed = 1) {
     });
 }
 
-// Optimized output printing
+// Optimized output printing with security
 async function printOutput(text, showCommand = true, command = '') {
     if (text === null || isTyping) return;
     isTyping = true;
@@ -355,7 +402,7 @@ async function printOutput(text, showCommand = true, command = '') {
     if (showCommand && command) {
         const cmd = document.createElement('div');
         cmd.className = 'command';
-        cmd.textContent = command;
+        cmd.textContent = Security.sanitizeInput(command);
         line.appendChild(cmd);
     }
 
@@ -364,13 +411,20 @@ async function printOutput(text, showCommand = true, command = '') {
     line.appendChild(response);
     output.appendChild(line);
 
-    await typeWriter(response, text);
+    const sanitizedText = Security.sanitizeHTML(text);
+    await typeWriter(response, sanitizedText);
     isTyping = false;
 }
 
-// Optimized command processing
+// Optimized command processing with security
 async function processCommand(cmd) {
-    const trimmed = cmd.trim();
+    // Rate limiting
+    if (!Security.rateLimit()) {
+        await printOutput('<span class="error">⚠ Rate limit exceeded. Please wait a moment...</span>', false);
+        return;
+    }
+
+    const trimmed = Security.sanitizeInput(cmd);
     if (!trimmed) return;
 
     commandHistory.push(cmd);
@@ -451,10 +505,17 @@ function getAIResponse(msg) {
     return responses[Math.floor(Math.random() * responses.length)];
 }
 
-// Event handlers
+// Event handlers with security
 input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !isTyping) {
-        processCommand(input.value);
+        // Input validation
+        const inputValue = input.value.trim();
+        if (inputValue.length > 500) {
+            printOutput('<span class="error">⚠ Input too long (max 500 characters)</span>', false);
+            input.value = '';
+            return;
+        }
+        processCommand(inputValue);
         input.value = '';
     } else if (e.key === 'ArrowUp') {
         e.preventDefault();
@@ -473,7 +534,7 @@ input.addEventListener('keydown', (e) => {
         }
     } else if (e.key === 'Tab') {
         e.preventDefault();
-        const partial = input.value.toLowerCase();
+        const partial = Security.sanitizeInput(input.value.toLowerCase());
         const matches = Object.keys(commands).filter(c => c.startsWith(partial));
         if (matches.length === 1) {
             input.value = matches[0];
@@ -506,6 +567,44 @@ if (card) {
     card.addEventListener('mouseleave', () => {
         card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
     });
+}
+
+// Dynamic cursor positioning
+const cursor = document.querySelector('.input-cursor');
+const terminalInput = document.getElementById('terminal-input');
+
+if (cursor && terminalInput) {
+    // Create a hidden span to measure text width
+    const measureSpan = document.createElement('span');
+    measureSpan.style.visibility = 'hidden';
+    measureSpan.style.position = 'absolute';
+    measureSpan.style.whiteSpace = 'pre';
+    measureSpan.style.fontFamily = 'Roboto Mono, monospace';
+    measureSpan.style.fontSize = '14px';
+    measureSpan.style.fontWeight = '400';
+    document.body.appendChild(measureSpan);
+
+    function updateCursorPosition() {
+        const inputValue = terminalInput.value;
+        const cursorPosition = terminalInput.selectionStart || 0;
+        
+        // Measure text width up to cursor position
+        measureSpan.textContent = inputValue.substring(0, cursorPosition);
+        const textWidth = measureSpan.offsetWidth;
+        
+        // Position cursor relative to input field start
+        cursor.style.left = `${textWidth}px`;
+    }
+
+    // Update cursor position on various events
+    terminalInput.addEventListener('input', updateCursorPosition);
+    terminalInput.addEventListener('keyup', updateCursorPosition);
+    terminalInput.addEventListener('keydown', updateCursorPosition);
+    terminalInput.addEventListener('click', updateCursorPosition);
+    terminalInput.addEventListener('focus', updateCursorPosition);
+    
+    // Initial position
+    setTimeout(updateCursorPosition, 100);
 }
 
 // Initialize on load

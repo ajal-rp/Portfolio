@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajal Rajan - Software Developer</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="no-referrer">
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +19,9 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Security: XSS Protection -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 </head>
 
 <body>
@@ -76,8 +85,10 @@
                         </span>
                     </div>
                     <span class="input-prompt">$</span>
-                    <input type="text" id="terminal-input" placeholder="Type 'help' to start..." autofocus autocomplete="off" spellcheck="false">
-                    <span class="cursor-indicator">▋</span>
+                    <div class="input-wrapper">
+                        <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+                        <span class="input-cursor">▋</span>
+                    </div>
                 </div>
             </div>
         </div>
