@@ -409,12 +409,14 @@ body {
     border-radius: 0;
     padding-right: 14px;
     font-weight: 400;
-}\n\n.segment-user .segment-arrow {
+}
+
+.segment-user .segment-arrow {
     color: #0f0;
 }
 
 .segment-path {
-    background: #0a0;
+    background: #0d0;
     color: #000;
     margin-left: 0;
     padding-left: 4px;
@@ -423,11 +425,11 @@ body {
 }
 
 .segment-path .segment-arrow {
-    color: #0a0;
+    color: #0d0;
 }
 
 .segment-branch {
-    background: #060;
+    background: #080;
     color: #000;
     margin-left: 0;
     padding-left: 4px;
@@ -568,19 +570,7 @@ a:hover {
     color: #52BE80;
 }
 
-/* Cursor blink animation */
-.cursor-blink {
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    0%, 50% {
-        opacity: 1;
-    }
-    51%, 100% {
-        opacity: 0;
-    }
-}
+/* Cursor blink animation - defined earlier in the file */
 
 /* Loading animation */
 .loading {
@@ -602,24 +592,6 @@ a:hover {
     60%, 100% {
         content: '...';
     }
-}
-.terminal-body::-webkit-scrollbar {
-    width: 10px;
-}
-
-.terminal-body::-webkit-scrollbar-track {
-    background: #1a1a1a;
-    border-radius: 10px;
-}
-
-.terminal-body::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #444, #555);
-    border-radius: 10px;
-    border: 2px solid #1a1a1a;
-}
-
-.terminal-body::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #555, #666);
 }
 /* Responsive design */
 @media (max-width: 1024px) {
