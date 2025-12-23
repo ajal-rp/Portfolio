@@ -72,6 +72,17 @@ const portfolioData = {
     ]
 };
 
+// Configuration constants
+const CONFIG = {
+    MAX_INPUT_LENGTH: 500,
+    RATE_LIMIT_WINDOW: 1000, // 1 second
+    RATE_LIMIT_MAX: 10,
+    TYPEWRITER_SPEED: 1,
+    HACK_EASTER_EGG_DELAY: 200, // 200ms
+    HACK_ANIMATION_INTERVAL: 400, // 400ms
+    CURSOR_INIT_DELAY: 100 // 100ms
+};
+
 // Security module
 const Security = {
     sanitizeHTML: (html) => {
@@ -82,14 +93,14 @@ const Security = {
                 ALLOW_DATA_ATTR: false
             });
         }
-        return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        return html.replaceAll(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
     },
     
     sanitizeInput: (input) => {
         return String(input)
             .trim()
-            .substring(0, 500)
-            .replace(/[<>]/g, '');
+            .substring(0, CONFIG.MAX_INPUT_LENGTH)
+            .replaceAll(/[<>]/g, '');
     },
     
     validateURL: (url) => {
@@ -97,7 +108,11 @@ const Security = {
             const fullUrl = url.startsWith('http') ? url : `https://${url}`;
             const parsed = new URL(fullUrl);
             return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '#';
-        } catch {
+        } catch (error) {
+            // Invalid URL format - return safe default
+            if (typeof console !== 'undefined' && console.warn) {
+                console.warn('Invalid URL format:', url, error.message);
+            }
             return '#';
         }
     },
@@ -107,15 +122,23 @@ const Security = {
         let lastTime = Date.now();
         return () => {
             const now = Date.now();
-            if (now - lastTime < 1000) {
+            if (now - lastTime < CONFIG.RATE_LIMIT_WINDOW) {
                 count++;
-                return count <= 10;
+                return count <= CONFIG.RATE_LIMIT_MAX;
             }
             count = 0;
             lastTime = now;
             return true;
         };
     })()
+};
+
+// Utility functions
+const getRandomElement = (array) => {
+    if (!Array.isArray(array) || array.length === 0) {
+        return null;
+    }
+    return array[Math.floor(Math.random() * array.length)];
 };
 
 // Optimized terminal state
@@ -246,45 +269,7 @@ ${'─'.repeat(60)}
             '<span class="success">[▓▓▓▓▓▓▓▓▓▓] ACCESS GRANTED! (Just kidding, you had it all along)</span>'
         ];
         
-        return new Promise(resolve => {
-            let frame = 0;
-            const div = document.createElement('div');
-            div.className = 'hack-animation';
-            output.appendChild(div);
-            
-            const int = setInterval(() => {
-                div.innerHTML = anims[frame++];
-                if (frame >= anims.length) {
-                    clearInterval(int);
-                    setTimeout(() => {
-                        div.remove();
-                        const egg = `
-<span class="success">🎉 CONGRATULATIONS! You've unlocked the Developer's Secret Vault!</span>
-${'═'.repeat(60)}
-
-<span class="info">💡 "Any fool can write code that a computer can understand. Good programmers write code that humans can understand." - Martin Fowler</span>
-
-<span class="warning">⚡ Behind the Scenes:</span>
-<span class="info">• ☕ Coffee consumed during this project: ~47 cups (and counting)</span>
-<span class="info">• 🐛 Bugs fixed: 127 (introduced: 128, net progress: -1)</span>
-<span class="info">• 🔥 Stack Overflow visits: Too many to count (we don't talk about it)</span>
-<span class="info">• ⏰ Time spent centering divs: 3 hours, 42 minutes, 17 seconds</span>
-<span class="info">• 🎯 Code reviews survived: All of them (barely)</span>
-<span class="info">• 🚀 Deployment anxiety level: It works on my machine ¯\\_(ツ)_/¯</span>
-
-<span class="warning">🏆 Developer Achievement Unlocked:</span>
-<span class="success">» "The Curious One" - You typed 'hack' because why not?</span>
-<span class="success">» "Easter Egg Hunter" - Welcome to the 1% who found this!</span>
-
-<span class="info">🎮 Pro Tip: Real hackers use 'sudo apt-get install coffee' before coding.</span>
-
-<span class="warning">Type 'help' to return to the matrix... I mean, normal commands.</span>
-                        `;
-                        printOutput(egg, false).then(() => resolve(null));
-                    }, 200);
-                }
-            }, 400);
-        });
+        return hackAnimation(anims);
     },
     
     chat: () => {
@@ -328,6 +313,53 @@ ${'─'.repeat(60)}
     `
 };
 
+// Helper function for hack animation
+function hackAnimation(anims) {
+    return new Promise(resolve => {
+        let frame = 0;
+        const div = document.createElement('div');
+        div.className = 'hack-animation';
+        output.appendChild(div);
+        
+        const int = setInterval(() => {
+            div.innerHTML = anims[frame++];
+            if (frame >= anims.length) {
+                clearInterval(int);
+                showEasterEgg(div, resolve);
+            }
+        }, CONFIG.HACK_ANIMATION_INTERVAL);
+    });
+}
+
+function showEasterEgg(div, resolve) {
+    setTimeout(() => {
+        div.remove();
+        const egg = `
+<span class="success">🎉 CONGRATULATIONS! You've unlocked the Developer's Secret Vault!</span>
+${'═'.repeat(60)}
+
+<span class="info">💡 "Any fool can write code that a computer can understand. Good programmers write code that humans can understand." - Martin Fowler</span>
+
+<span class="warning">⚡ Behind the Scenes:</span>
+<span class="info">• ☕ Coffee consumed during this project: ~47 cups (and counting)</span>
+<span class="info">• 🐛 Bugs fixed: 127 (introduced: 128, net progress: -1)</span>
+<span class="info">• 🔥 Stack Overflow visits: Too many to count (we don't talk about it)</span>
+<span class="info">• ⏰ Time spent centering divs: 3 hours, 42 minutes, 17 seconds</span>
+<span class="info">• 🎯 Code reviews survived: All of them (barely)</span>
+<span class="info">• 🚀 Deployment anxiety level: It works on my machine ¯\\_(ツ)_/¯</span>
+
+<span class="warning">🏆 Developer Achievement Unlocked:</span>
+<span class="success">» "The Curious One" - You typed 'hack' because why not?</span>
+<span class="success">» "Easter Egg Hunter" - Welcome to the 1% who found this!</span>
+
+<span class="info">🎮 Pro Tip: Real hackers use 'sudo apt-get install coffee' before coding.</span>
+
+<span class="warning">Type 'help' to return to the matrix... I mean, normal commands.</span>
+        `;
+        printOutput(egg, false).then(() => resolve(null));
+    }, CONFIG.HACK_EASTER_EGG_DELAY);
+}
+
 // Optimized initialization
 function init() {
     printOutput(commands.welcome(), false);
@@ -338,8 +370,6 @@ function init() {
 
 // Update clock in prompt
 function updateClock() {
-    const now = new Date();
-    const time = now.toLocaleTimeString('en-US', { hour12: false });
     const dateEl = document.querySelector('.segment-user .segment-text');
     if (dateEl) dateEl.textContent = portfolioData.name.split(' ')[0].toLowerCase();
 }
@@ -363,11 +393,12 @@ function typeWriter(element, html, speed = 1) {
                 if (index < html.length) {
                     if (html[index] === '<') {
                         const tagEnd = html.indexOf('>', index);
-                        if (tagEnd !== -1) {
+                        if (tagEnd === -1) {
+                            // No closing tag found
+                            currentText += html[index++];
+                        } else {
                             currentText += html.substring(index, tagEnd + 1);
                             index = tagEnd + 1;
-                        } else {
-                            currentText += html[index++];
                         }
                     } else {
                         currentText += html[index++];
@@ -456,53 +487,130 @@ async function processCommand(cmd) {
     }
 }
 
-// Optimized AI responses
+// Helper functions for AI responses
+function getGreetingResponse(img, isReturningUser) {
+    const greetings = [
+        `Hello! 👋 I'm Jiraya, your guide to Ajal's professional journey. I can share insights about his 3+ years of experience, impressive project portfolio, or technical expertise. What interests you?`,
+        `Hey there! ${isReturningUser ? 'Good to see you again!' : 'Welcome to Ajal\'s portfolio.'} I'm here to help you explore his work in Django, Flask, and full-stack development. What would you like to know?`,
+        `Greetings! 🎯 Ready to learn about Ajal's software development journey? Ask me about his projects at Cydez Technologies, his tech stack, or any specific area you're curious about!`
+    ];
+    const greeting = getRandomElement(greetings) || greetings[0];
+    return `<span class="success">${img} Jiraya:</span> ${greeting}`;
+}
+
+function getProjectResponse(m, img) {
+    if (m.match(/what (projects|work)|tell me about (projects|work)|show (projects|work)/)) {
+        const projectNames = portfolioData.projects.map(p => p.name).join(', ');
+        return `<span class="success">${img} Jiraya:</span> Ajal has built some impressive systems! 🚀 Major projects include: ${projectNames}. Each one showcases different aspects of his full-stack expertise. Want details on a specific project? Just ask, or type <span class="warning">'projects'</span> to see the full breakdown!`;
+    }
+    if (m.includes('edu management') || m.includes('erp')) {
+        const edu = portfolioData.projects[0];
+        return `<span class="success">${img} Jiraya:</span> The ${edu.name} is fascinating! 📚 ${edu.description} This project demonstrates expertise in microservice architecture and scalability. Type <span class="warning">'projects'</span> for technical details!`;
+    }
+    if (m.includes('recruitment') || m.includes('hiring')) {
+        const rec = portfolioData.projects[1];
+        return `<span class="success">${img} Jiraya:</span> The ${rec.name} streamlines hiring processes! 💼 ${rec.description} This showcases strong backend optimization skills. Check <span class="warning">'projects'</span> for more!`;
+    }
+    return null;
+}
+
+function getSkillsResponse(m, img) {
+    if (m.match(/what (skills|technologies|tech stack)|tell me about (skills|expertise)/)) {
+        const mainSkills = `${portfolioData.skills.Languages.join(', ')}, ${portfolioData.skills.Frameworks.slice(0, 3).join(', ')}`;
+        return `<span class="success">${img} Jiraya:</span> Ajal's core expertise lies in <span class="warning">${mainSkills}</span>. He's particularly strong in building RESTful APIs and microservices. With ${portfolioData.experience} in production environments, he knows how to build scalable, maintainable systems. Type <span class="warning">'skills'</span> for the complete tech arsenal!`;
+    }
+    if (m.includes('python') || m.includes('django') || m.includes('flask')) {
+        return `<span class="success">${img} Jiraya:</span> Python is Ajal's primary language! 🐍 He specializes in Django and Flask frameworks, building everything from microservices to full-scale ERPs. His experience includes RESTful API development, database optimization, and implementing secure authentication systems. Want to see this in action? Check out the <span class="warning">'projects'</span>!`;
+    }
+    if (m.includes('database') || m.includes('sql') || m.includes('postgresql') || m.includes('mysql')) {
+        return `<span class="success">${img} Jiraya:</span> Database expertise includes ${portfolioData.skills.Databases.join(', ')}! 💾 Ajal has experience optimizing complex queries, designing efficient schemas, and managing data integrity across large-scale applications. Type <span class="warning">'projects'</span> to see real-world implementations!`;
+    }
+    return null;
+}
+
+function getFallbackResponse(img) {
+    const contextualResponses = [
+        `I'm here to showcase Ajal's ${portfolioData.experience} of experience! What aspect interests you most - his <span class="warning">projects</span>, <span class="warning">technical skills</span>, or <span class="warning">work experience</span>?`,
+        `Let me help you get to know Ajal better! He's a ${portfolioData.title} specializing in Django and Flask. Want to hear about specific <span class="warning">projects</span> or his <span class="warning">tech stack</span>?`,
+        `Great question! As someone with expertise in ${portfolioData.skills.Frameworks.slice(0, 2).join(' and ')}, Ajal has quite a story. Ask me about <span class="warning">projects</span>, <span class="warning">skills</span>, or <span class="warning">experience</span>!`,
+        `I can tell you all about Ajal's work at ${portfolioData.experience_details[0].company} and his impressive project portfolio. What would you like to explore first?`
+    ];
+    const response = getRandomElement(contextualResponses) || contextualResponses[0];
+    return `<span class="success">${img} Jiraya:</span> ${response}`;
+}
+
+// Enhanced AI responses with better context awareness
 function getAIResponse(msg) {
     chatContext.push(msg);
-    const m = msg.toLowerCase();
-    
+    const m = msg.toLowerCase().trim();
     const img = '<img src="images/jiraya.jpg" alt="Jiraya" style="width:20px;height:20px;vertical-align:middle;border-radius:50%;">';
     
-    if (m.match(/^(hi|hello|hey|greetings)/)) {
-        return `<span class="success">${img} Jiraya:</span> Hello! I'm Jiraya, Ajal's AI assistant. How can I help you learn about him today? Feel free to ask about projects, skills, or anything else!`;
+    // Check if this is a returning user (conversation has history)
+    const isReturningUser = chatContext.length > 1;
+    
+    // Greetings
+    if (m.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
+        return getGreetingResponse(img, isReturningUser);
     }
     
-    if (m.includes('project') || m.includes('work') || m.includes('built')) {
-        const p = portfolioData.projects[Math.floor(Math.random() * portfolioData.projects.length)];
-        return `<span class="success">${img} Jiraya:</span> Great question! One of the exciting projects is "${p.name}" built with ${p.tech}. ${p.description}\n\nType 'projects' to see all projects, or ask me something else!`;
+    // Project questions
+    const projectResponse = getProjectResponse(m, img);
+    if (projectResponse) return projectResponse;
+    
+    // Skills questions
+    const skillsResponse = getSkillsResponse(m, img);
+    if (skillsResponse) return skillsResponse;
+    
+    // Experience and career questions
+    if (m.match(/how long|years of experience|experience level|when (did|started)/)) {
+        return `<span class="success">${img} Jiraya:</span> Ajal has ${portfolioData.experience} of professional software development experience! 📈 Currently working as ${portfolioData.experience_details[0].role} at ${portfolioData.experience_details[0].company} since ${portfolioData.experience_details[0].period}. His journey includes delivering multiple production applications and mentoring junior developers. Type <span class="warning">'experience'</span> for detailed achievements!`;
     }
     
-    if (m.includes('skill') || m.includes('technology') || m.includes('tech stack')) {
-        const cats = Object.keys(portfolioData.skills);
-        const cat = cats[Math.floor(Math.random() * cats.length)];
-        return `<span class="success">${img} Jiraya:</span> ${portfolioData.name} has strong expertise in ${cat}: ${portfolioData.skills[cat].join(', ')}. \n\nType 'skills' to see the complete skill set!`;
+    if (m.includes('cydez') || m.includes('company') || m.includes('current job')) {
+        const job = portfolioData.experience_details[0];
+        return `<span class="success">${img} Jiraya:</span> At ${job.company}, Ajal works on cutting-edge web applications! 🏢 His role involves full SDLC collaboration, microservice development, and delivering measurable performance improvements. He's known for writing clean, testable code and being a team player. Want more details? Type <span class="warning">'experience'</span>!`;
     }
     
-    if (m.includes('experience') || m.includes('worked') || m.includes('job')) {
-        const j = portfolioData.experience_details[0];
-        return `<span class="success">${img} Jiraya:</span> Currently working as ${j.role} at ${j.company} since ${j.period}. Key achievements include ${j.responsibilities[0].toLowerCase()}.\n\nType 'experience' for full work history!`;
+    // Contact and hiring intent
+    if (m.match(/hire|recruit|job offer|opportunity|interested in hiring/)) {
+        return `<span class="success">${img} Jiraya:</span> Excellent! Ajal is open to exciting opportunities! 💼 For professional inquiries, reach out at <span class="warning">${portfolioData.email}</span> or connect on LinkedIn at <span class="warning">${portfolioData.linkedin}</span>. He's particularly interested in projects involving Django, microservices, or AI integration. You can also type <span class="warning">'resume'</span> to download his full CV!`;
     }
     
-    if (m.includes('contact') || m.includes('email') || m.includes('reach') || m.includes('hire')) {
-        return `<span class="success">${img} Jiraya:</span> You can reach out at ${portfolioData.email} or connect on LinkedIn: ${portfolioData.linkedin}. \n\nType 'contact' for all contact information!`;
+    if (m.includes('email') || m.includes('contact') || m.includes('reach')) {
+        return `<span class="success">${img} Jiraya:</span> 📧 Best way to reach Ajal: ${portfolioData.email}\n🔗 Connect on LinkedIn: ${portfolioData.linkedin}\n\nType <span class="warning">'contact'</span> for all contact options!`;
     }
     
-    if (m.includes('ai') || m.includes('machine learning') || m.includes('artificial intelligence')) {
-        return `<span class="success">${img} Jiraya:</span> ${portfolioData.name} is passionate about AI & ML! Experienced with ${portfolioData.skills['AI/ML'].join(', ')}. Currently working on AI-powered projects and exploring the latest in generative AI!`;
+    // Education questions
+    if (m.includes('education') || m.includes('degree') || m.includes('study') || m.includes('college')) {
+        return `<span class="success">${img} Jiraya:</span> Ajal holds a ${portfolioData.education.degree} from ${portfolioData.education.university} 🎓 (Graduated: ${portfolioData.education.year}, GPA: ${portfolioData.education.gpa}). He's also certified in Django Full Stack Development. Solid academic foundation combined with hands-on experience! Type <span class="warning">'education'</span> for details.`;
     }
     
-    if (m.includes('location') || m.includes('where') || m.includes('available')) {
-        return `<span class="success">${img} Jiraya:</span> Based in ${portfolioData.location}, but open to remote opportunities worldwide. Available for exciting projects and collaborations!`;
+    // AI/ML interest
+    if (m.includes('ai') || m.includes('machine learning') || m.includes('artificial intelligence') || m.includes('ml')) {
+        return `<span class="success">${img} Jiraya:</span> AI & ML are exciting areas for Ajal! 🤖 He's experienced with ${portfolioData.skills['AI/ML'].join(', ')} and actively explores generative AI applications. He's built this very chat interface and is keen on integrating AI into web applications. The future is intelligent software!`;
     }
     
-    const responses = [
-        `<span class="success">${img} Jiraya:</span> That's an interesting question! With ${portfolioData.experience} of experience, I can help answer questions about projects, skills, or career. What would you like to know?`,
-        `<span class="success">${img} Jiraya:</span> I'd love to help! Try asking about specific projects, technical skills, or work experience. You can also type 'help' to see all available commands.`,
-        `<span class="success">${img} Jiraya:</span> Great question! ${portfolioData.name} specializes in ${portfolioData.title} with expertise in modern web technologies and AI. What specific area interests you?`,
-        `<span class="success">${img} Jiraya:</span> I can provide information about projects, skills, experience, and more. Try asking something like "What projects have you built?" or "What are your skills?"`
-    ];
+    // Remote work questions
+    if (m.includes('remote') || m.includes('location') || m.includes('where') || m.includes('relocate')) {
+        return `<span class="success">${img} Jiraya:</span> 🌍 Currently based in ${portfolioData.location}, but fully equipped for remote work! Ajal has experience collaborating with distributed teams and is open to both remote opportunities and relocation for the right role. Modern development knows no boundaries!`;
+    }
     
-    return responses[Math.floor(Math.random() * responses.length)];
+    // Strengths and expertise
+    if (m.match(/what makes|why hire|strengths|what's special|best at/)) {
+        return `<span class="success">${img} Jiraya:</span> What sets Ajal apart? 🌟\n• ${portfolioData.experience} building scalable production systems\n• Strong in Django/Flask microservice architectures\n• Focus on clean, maintainable code\n• Team player who mentors juniors\n• Proven track record of delivering measurable results\n\nType <span class="warning">'experience'</span> or <span class="warning">'projects'</span> to see this in action!`;
+    }
+    
+    // Who/what questions
+    if (m.match(/who (is|are) (you|ajal)|tell me about (yourself|ajal)/)) {
+        return `<span class="success">${img} Jiraya:</span> ${portfolioData.about}\n\nThat's Ajal in a nutshell! ${portfolioData.experience} of turning complex problems into elegant solutions. Want to dive deeper? Ask about <span class="warning">projects</span>, <span class="warning">skills</span>, or <span class="warning">experience</span>!`;
+    }
+    
+    // Help and commands
+    if (m.includes('what can you') || m.includes('help me') || m.includes('how to use')) {
+        return `<span class="success">${img} Jiraya:</span> I can help you explore Ajal's professional profile! Try asking:\n\n💡 "What projects have you built?"\n💡 "Tell me about your skills"\n💡 "What's your experience?"\n💡 "How can I contact you?"\n💡 "Are you available for hire?"\n\nOr type <span class="warning">'help'</span> to see all available commands!`;
+    }
+    
+    return getFallbackResponse(img);
 }
 
 // Event handlers with security
@@ -604,7 +712,7 @@ if (cursor && terminalInput) {
     terminalInput.addEventListener('focus', updateCursorPosition);
     
     // Initial position
-    setTimeout(updateCursorPosition, 100);
+    setTimeout(updateCursorPosition, CONFIG.CURSOR_INIT_DELAY);
 }
 
 // Initialize on load
